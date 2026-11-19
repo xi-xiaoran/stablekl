@@ -1,0 +1,57 @@
+{
+ "families": [
+  {
+   "name": "qwen2.5-1.5b",
+   "base": "Qwen/Qwen2.5-1.5B-Instruct",
+   "windows": 32,
+   "window_len": 512,
+   "variants": [
+    {
+     "name": "base",
+     "kind": "base"
+    },
+    {
+     "name": "rtn_w8",
+     "kind": "rtn",
+     "bits": 8
+    },
+    {
+     "name": "gptq_w8",
+     "kind": "gptq",
+     "repo": "Qwen/Qwen2.5-1.5B-Instruct-GPTQ-Int8"
+    },
+    {
+     "name": "awq_w4",
+     "kind": "awq",
+     "repo": "Qwen/Qwen2.5-1.5B-Instruct-AWQ"
+    },
+    {
+     "name": "gptq_w4",
+     "kind": "gptq",
+     "repo": "Qwen/Qwen2.5-1.5B-Instruct-GPTQ-Int4"
+    },
+    {
+     "name": "rtn_w4g128",
+     "kind": "rtn",
+     "bits": 4,
+     "group": 128
+    },
+    {
+     "name": "rtn_w3g128",
+     "kind": "rtn",
+     "bits": 3,
+     "group": 128
+    }
+   ]
+  }
+ ],
+ "sanity": {
+  "base_ppl_max": 100.0,
+  "ratio_max": {
+   "8": 1.05,
+   "4": 1.5,
+   "3": 10.0
+  },
+  "note": "pre-registered: a variant outside these limits is excluded from all KL statistics; ratio must also be >= 1/1.05"
+ }
+}

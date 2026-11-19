@@ -1,0 +1,51 @@
+import os, sys, math, torch
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+import run_rank as RR
+fails = 0
+
+def check(ok, msg):
+    global fails
+    fails += not ok
+    print(('ok  ' if ok else 'FAIL ') + msg)
+check(abs(RR.kendall_tau_b([1, 2, 3, 4], [10, 20, 30, 40]) - 1) < 1e-12, 'tau = 1 for the same order')
+check(abs(RR.kendall_tau_b([1, 2, 3, 4], [4, 3, 2, 1]) + 1) < 1e-12, 'tau = -1 for the reverse order')
+t = RR.kendall_tau_b([1, 2, 3], [0, 0, 1])
+check(abs(t - 2 / math.sqrt(3 * 2)) < 1e-12, f'tau-b with a tie in y: {t:.4f}')
+s, det = RR.top_k({'a': 3.0, 'b': 2.0, 'c': 1.0}, 2)
+check(s == ['a', 'b'] and det, f'top-2 determined: {s}')
+s, det = RR.top_k({'a': 3.0, 'b': 1.0, 'c': 1.0}, 2)
+check(not det, 'tie at the k-th place -> not determined')
+s, det = RR.top_k({'a': 0.0, 'b': 0.0, 'c': 0.0}, 1)
+check(not det, "all reported 0 (fp16 'mean' underflow) -> not determined")
+s, det = RR.top_k({'a': float('inf'), 'b': 1.0}, 1)
+check(s is None and (not det), 'non-finite value -> not rankable')
+j = RR.judge({'A': 5.0, 'B': 4.0, 'C': 4.0}, {'A': 5.0, 'B': 3.0, 'C': 4.0}, 2)
+check(j['reference_tie'] and j['determined'] and (j['chosen'] == ['A', 'C']) and (j['n_wrong'] == 0), f'reference tie at k: method choice {{A,C}} not wrong, flagged: {j}')
+j = RR.judge({'A': 5.0, 'B': 4.0, 'C': 1.0}, {'A': 5.0, 'B': 3.0, 'C': 4.0}, 2)
+check(not j['reference_tie'] and j['n_wrong'] == 1, f'unique reference {{A,B}}, method {{A,C}}: 1 wrong layer: {j}')
+j = RR.judge({'A': 5.0, 'B': 4.0, 'C': 1.0}, {'A': 0.0, 'B': 0.0, 'C': 0.0}, 2)
+check(not j['determined'], 'method tie at k (all 0) -> not determined')
+j = RR.judge({'A': 5.0, 'B': 4.0}, {'A': float('inf'), 'B': 1.0}, 1)
+check(not j['rankable'], 'method with inf -> not rankable')
+j = RR.judge({'A': 5.0, 'B': 4.0}, {'A': 1.0, 'B': 2.0}, 3)
+check(j['n_wrong'] == 0, 'k larger than the number of layers: nothing wrong, no crash')
+from transformers import Qwen2Config, Qwen2ForCausalLM
+torch.manual_seed(0)
+m = Qwen2ForCausalLM(Qwen2Config(vocab_size=100, hidden_size=128, intermediate_size=256, num_hidden_layers=3, num_attention_heads=4, num_key_value_heads=2)).half()
+h0 = RR.weights_sha(m)
+q = RR.Quantiser(m)
+q.apply([1], 4, 128)
+h1 = RR.weights_sha(m)
+w_other = m.model.layers[0].self_attn.q_proj.weight.clone()
+q.restore()
+h2 = RR.weights_sha(m)
+check(h1 != h0 and h2 == h0, 'apply changes only while applied; restore is exact (weight SHA-256)')
+q.apply([0, 2], 8, None)
+ch = [not torch.equal(m.model.layers[i].mlp.down_proj.weight, w) for i, w in []]
+q.restore()
+check(RR.weights_sha(m) == h0, 'multi-layer apply / restore exact')
+q.apply([1], 4, 128)
+check(torch.equal(m.model.layers[0].self_attn.q_proj.weight, w_other), 'other layers untouched')
+q.restore()
+print('layer-ranking unit tests:', 'PASS' if fails == 0 else f'{fails} FAILED')
+sys.exit(1 if fails else 0)

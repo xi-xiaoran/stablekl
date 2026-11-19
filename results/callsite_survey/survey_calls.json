@@ -1,0 +1,899 @@
+{
+ "agilerl": {
+  "A": [],
+  "B": []
+ },
+ "allennlp": {
+  "A": [],
+  "B": []
+ },
+ "audiocraft": {
+  "A": [],
+  "B": [
+   [
+    "audiocraft-1.3.0/audiocraft/metrics/kld.py",
+    1
+   ]
+  ]
+ },
+ "bambi": {
+  "A": [],
+  "B": []
+ },
+ "bayesian_torch": {
+  "A": [],
+  "B": []
+ },
+ "blitz_bayesian_pytorch": {
+  "A": [],
+  "B": []
+ },
+ "botorch": {
+  "A": [
+   [
+    "botorch_community/acquisition/latent_information_gain.py",
+    1
+   ],
+   [
+    "botorch_community/models/np_regression.py",
+    1
+   ]
+  ],
+  "B": []
+ },
+ "captum": {
+  "A": [],
+  "B": []
+ },
+ "cleanrl": {
+  "A": [
+   [
+    "cleanrl-0.4.8/cleanrl/ppg_procgen_fast.py",
+    1
+   ],
+   [
+    "cleanrl-0.4.8/cleanrl/ppg_procgen_impala_cnn.py",
+    1
+   ],
+   [
+    "cleanrl-0.4.8/cleanrl/ppg_atari_visual.py",
+    1
+   ],
+   [
+    "cleanrl-0.4.8/cleanrl/ppg_procgen_visual.py",
+    1
+   ]
+  ],
+  "B": []
+ },
+ "coqui_tts": {
+  "A": [
+   [
+    "TTS/tts/layers/losses.py",
+    1
+   ]
+  ],
+  "B": []
+ },
+ "d3rlpy": {
+  "A": [
+   [
+    "d3rlpy/models/torch/imitators.py",
+    1
+   ]
+  ],
+  "B": []
+ },
+ "denoising_diffusion_pytorch": {
+  "A": [],
+  "B": []
+ },
+ "dgl": {
+  "A": [],
+  "B": []
+ },
+ "diffusers": {
+  "A": [],
+  "B": []
+ },
+ "disent": {
+  "A": [
+   [
+    "disent/util/lightning/callbacks/_callback_vis_dists.py",
+    3
+   ],
+   [
+    "disent/nn/loss/kl.py",
+    2
+   ],
+   [
+    "disent/frameworks/vae/_weaklysupervised__adavae.py",
+    5
+   ]
+  ],
+  "B": []
+ },
+ "espnet": {
+  "A": [
+   [
+    "espnet2/gan_tts/vits/loss.py",
+    1
+   ]
+  ],
+  "B": [
+   [
+    "espnet2/asr_transducer/espnet_transducer_model.py",
+    1
+   ],
+   [
+    "espnet2/s2st/losses/attention_loss.py",
+    1
+   ],
+   [
+    "espnet2/legacy/nets/pytorch_backend/transformer/label_smoothing_loss.py",
+    1
+   ]
+  ]
+ },
+ "fairseq": {
+  "A": [],
+  "B": [
+   [
+    "fairseq-0.12.2/fairseq/criterions/nat_loss.py",
+    1
+   ]
+  ]
+ },
+ "flair": {
+  "A": [],
+  "B": []
+ },
+ "funsor": {
+  "A": [],
+  "B": []
+ },
+ "garage": {
+  "A": [
+   [
+    "garage-2021.3.0/src/garage/torch/policies/context_conditioned_policy.py",
+    1
+   ],
+   [
+    "garage-2021.3.0/src/garage/torch/algos/vpg.py",
+    1
+   ]
+  ],
+  "B": []
+ },
+ "geomstats": {
+  "A": [],
+  "B": []
+ },
+ "gpytorch": {
+  "A": [
+   [
+    "gpytorch/variational/nearest_neighbor_variational_strategy.py",
+    1
+   ],
+   [
+    "gpytorch/variational/_variational_strategy.py",
+    1
+   ],
+   [
+    "gpytorch/mlls/kl_gaussian_added_loss_term.py",
+    1
+   ]
+  ],
+  "B": []
+ },
+ "k_diffusion": {
+  "A": [],
+  "B": []
+ },
+ "kornia": {
+  "A": [],
+  "B": [
+   [
+    "kornia/losses/divergence.py",
+    2
+   ]
+  ]
+ },
+ "laplace_torch": {
+  "A": [],
+  "B": []
+ },
+ "lightly": {
+  "A": [],
+  "B": [
+   [
+    "lightly/loss/pmsn_loss.py",
+    2
+   ],
+   [
+    "lightly/loss/regularizer/co2.py",
+    2
+   ]
+  ]
+ },
+ "lightning_bolts": {
+  "A": [
+   [
+    "pl_bolts/models/autoencoders/basic_vae/basic_vae_module.py",
+    1
+   ]
+  ],
+  "B": []
+ },
+ "lightning_uq_box": {
+  "A": [
+   [
+    "lightning_uq_box/uq_methods/prob_unet.py",
+    1
+   ]
+  ],
+  "B": []
+ },
+ "mmengine": {
+  "A": [],
+  "B": []
+ },
+ "monai": {
+  "A": [],
+  "B": []
+ },
+ "nemo_toolkit": {
+  "A": [],
+  "B": [
+   [
+    "nemo/collections/tts/losses/magpietts_cfg_distillation.py",
+    1
+   ]
+  ]
+ },
+ "neural_compressor": {
+  "A": [],
+  "B": []
+ },
+ "nflows": {
+  "A": [],
+  "B": []
+ },
+ "nncf": {
+  "A": [],
+  "B": []
+ },
+ "normflows": {
+  "A": [],
+  "B": []
+ },
+ "open_clip_torch": {
+  "A": [],
+  "B": []
+ },
+ "optimum": {
+  "A": [],
+  "B": []
+ },
+ "peft": {
+  "A": [],
+  "B": []
+ },
+ "pfrl": {
+  "A": [
+   [
+    "pfrl-0.4.0/pfrl/agents/acer.py",
+    1
+   ],
+   [
+    "pfrl-0.4.0/pfrl/agents/trpo.py",
+    2
+   ]
+  ],
+  "B": []
+ },
+ "pykeen": {
+  "A": [],
+  "B": []
+ },
+ "pymc": {
+  "A": [],
+  "B": []
+ },
+ "pyod": {
+  "A": [],
+  "B": []
+ },
+ "pyro_ppl": {
+  "A": [
+   [
+    "pyro/distributions/kl.py",
+    1
+   ],
+   [
+    "pyro/distributions/torch_distribution.py",
+    3
+   ],
+   [
+    "pyro/infer/trace_mean_field_elbo.py",
+    1
+   ]
+  ],
+  "B": []
+ },
+ "pythae": {
+  "A": [],
+  "B": []
+ },
+ "pytorch_forecasting": {
+  "A": [],
+  "B": []
+ },
+ "pytorch_lightning": {
+  "A": [],
+  "B": []
+ },
+ "pytorch_metric_learning": {
+  "A": [],
+  "B": []
+ },
+ "pytorch_tabnet": {
+  "A": [],
+  "B": []
+ },
+ "pytorch_widedeep": {
+  "A": [],
+  "B": []
+ },
+ "recbole": {
+  "A": [],
+  "B": []
+ },
+ "rsl_rl_lib": {
+  "A": [
+   [
+    "rsl_rl/modules/distribution.py",
+    2
+   ]
+  ],
+  "B": []
+ },
+ "sb3_contrib": {
+  "A": [],
+  "B": []
+ },
+ "sbi": {
+  "A": [],
+  "B": []
+ },
+ "scvi_tools": {
+  "A": [
+   [
+    "scvi/module/_scanvae.py",
+    3
+   ],
+   [
+    "scvi/module/_mrdeconv.py",
+    1
+   ],
+   [
+    "scvi/module/_vae.py",
+    2
+   ],
+   [
+    "scvi/module/_totalvae.py",
+    3
+   ],
+   [
+    "scvi/module/_autozivae.py",
+    3
+   ],
+   [
+    "scvi/module/_peakvae.py",
+    1
+   ],
+   [
+    "scvi/module/_vaec.py",
+    1
+   ],
+   [
+    "scvi/module/_multivae.py",
+    3
+   ],
+   [
+    "scvi/module/base/_priors.py",
+    1
+   ],
+   [
+    "scvi/external/totalanvi/_module.py",
+    4
+   ],
+   [
+    "scvi/external/gimvi/_module.py",
+    2
+   ],
+   [
+    "scvi/external/mrvi/_module.py",
+    1
+   ],
+   [
+    "scvi/external/scar/_module.py",
+    2
+   ],
+   [
+    "scvi/external/velovi/_module.py",
+    2
+   ],
+   [
+    "scvi/external/contrastivevi/_module.py",
+    2
+   ],
+   [
+    "scvi/external/diagvi/_module.py",
+    1
+   ],
+   [
+    "scvi/external/methylvi/_methylvi_module.py",
+    1
+   ],
+   [
+    "scvi/external/methylvi/_methylanvi_module.py",
+    2
+   ],
+   [
+    "scvi/external/cytovi/_module.py",
+    1
+   ],
+   [
+    "scvi/external/scviva/_module.py",
+    2
+   ],
+   [
+    "scvi/external/sysvi/_priors.py",
+    1
+   ]
+  ],
+  "B": [
+   [
+    "scvi/module/_mrdeconv.py",
+    1
+   ]
+  ]
+ },
+ "sentence_transformers": {
+  "A": [],
+  "B": [
+   [
+    "sentence_transformers/multi_vector_encoder/evaluation/distillation.py",
+    1
+   ],
+   [
+    "sentence_transformers/multi_vector_encoder/losses/distill_kl_div.py",
+    3
+   ],
+   [
+    "sentence_transformers/sparse_encoder/losses/sparse_distill_kl_div.py",
+    3
+   ],
+   [
+    "sentence_transformers/sentence_transformer/losses/adaptive_layer.py",
+    1
+   ],
+   [
+    "sentence_transformers/sentence_transformer/losses/distill_kl_div.py",
+    4
+   ]
+  ]
+ },
+ "skrl": {
+  "A": [
+   [
+    "skrl/resources/schedulers/torch/kl_adaptive.py",
+    1
+   ]
+  ],
+  "B": []
+ },
+ "speechbrain": {
+  "A": [
+   [
+    "speechbrain/lobes/models/segan_model.py",
+    1
+   ]
+  ],
+  "B": [
+   [
+    "speechbrain/nnet/losses.py",
+    2
+   ]
+  ]
+ },
+ "stable_baselines3": {
+  "A": [
+   [
+    "stable_baselines3/common/distributions.py",
+    2
+   ]
+  ],
+  "B": []
+ },
+ "stanza": {
+  "A": [],
+  "B": []
+ },
+ "tianshou": {
+  "A": [
+   [
+    "tianshou/algorithm/modelfree/trpo.py",
+    2
+   ],
+   [
+    "tianshou/algorithm/modelfree/npg.py",
+    2
+   ]
+  ],
+  "B": []
+ },
+ "timm": {
+  "A": [],
+  "B": [
+   [
+    "timm/task/distillation.py",
+    1
+   ],
+   [
+    "timm/task/token_distillation.py",
+    1
+   ],
+   [
+    "timm/loss/jsd.py",
+    1
+   ]
+  ]
+ },
+ "torch_geometric": {
+  "A": [],
+  "B": [
+   [
+    "torch_geometric/nn/pool/mem_pool.py",
+    1
+   ],
+   [
+    "torch_geometric/explain/metric/faithfulness.py",
+    1
+   ]
+  ]
+ },
+ "torch_uncertainty": {
+  "A": [],
+  "B": [
+   [
+    "torch_uncertainty/losses/classification.py",
+    1
+   ],
+   [
+    "torch_uncertainty/losses/classification.py",
+    1
+   ]
+  ]
+ },
+ "torchcde": {
+  "A": [],
+  "B": []
+ },
+ "torchdistill": {
+  "A": [],
+  "B": [
+   [
+    "torchdistill/losses/mid_level.py",
+    4
+   ]
+  ]
+ },
+ "torchmetrics": {
+  "A": [],
+  "B": []
+ },
+ "torchrl": {
+  "A": [
+   [
+    "torchrl/objectives/ppo.py",
+    1
+   ]
+  ],
+  "B": []
+ },
+ "torchsde": {
+  "A": [],
+  "B": []
+ },
+ "torchtune": {
+  "A": [],
+  "B": []
+ },
+ "transformers": {
+  "A": [],
+  "B": [
+   [
+    "transformers/models/visual_bert/modeling_visual_bert.py",
+    2
+   ],
+   [
+    "transformers/loss/loss_d_fine.py",
+    1
+   ]
+  ]
+ },
+ "trl": {
+  "A": [],
+  "B": [
+   [
+    "trl/experimental/server_distillation/server_distillation_trainer.py",
+    4
+   ],
+   [
+    "trl/experimental/sdpo/loss_utils.py",
+    4
+   ],
+   [
+    "trl/experimental/gold/gold_trainer.py",
+    6
+   ],
+   [
+    "trl/experimental/gkd/gkd_trainer.py",
+    4
+   ],
+   [
+    "trl/experimental/iw_opd/iw_opd_trainer.py",
+    4
+   ],
+   [
+    "trl/experimental/sdft/loss_utils.py",
+    4
+   ]
+  ]
+ },
+ "ultralytics": {
+  "A": [],
+  "B": []
+ },
+ "uncertainty_baselines": {
+  "A": [],
+  "B": []
+ },
+ "zuko": {
+  "A": [],
+  "B": []
+ },
+ "EAP": {
+  "A": [],
+  "B": []
+ },
+ "acdc": {
+  "A": [],
+  "B": []
+ },
+ "adversarial_robustness_toolbox": {
+  "A": [],
+  "B": [
+   [
+    "art/defences/trainer/adversarial_trainer_awp_pytorch.py",
+    2
+   ],
+   [
+    "art/defences/trainer/adversarial_trainer_oaat_pytorch.py",
+    3
+   ],
+   [
+    "art/defences/trainer/adversarial_trainer_trades_pytorch.py",
+    1
+   ],
+   [
+    "art/estimators/certification/randomized_smoothing/smooth_mix/pytorch.py",
+    1
+   ]
+  ]
+ },
+ "advertorch": {
+  "A": [],
+  "B": []
+ },
+ "alibi_detect": {
+  "A": [],
+  "B": []
+ },
+ "auto_circuit": {
+  "A": [],
+  "B": [
+   [
+    "auto_circuit/model_utils/task_projectors/task_projector_training.py",
+    2
+   ],
+   [
+    "auto_circuit/model_utils/sparse_autoencoders/autoencoder_transformer.py",
+    1
+   ],
+   [
+    "auto_circuit/model_utils/sparse_autoencoders/autoencoder_training.py",
+    1
+   ],
+   [
+    "auto_circuit/utils/tensor_ops.py",
+    1
+   ]
+  ]
+ },
+ "baal": {
+  "A": [],
+  "B": []
+ },
+ "bert_score": {
+  "A": [],
+  "B": []
+ },
+ "circuit_tracer": {
+  "A": [],
+  "B": []
+ },
+ "cleanlab": {
+  "A": [],
+  "B": []
+ },
+ "deepchecks": {
+  "A": [],
+  "B": []
+ },
+ "dictionary_learning": {
+  "A": [],
+  "B": []
+ },
+ "easyeditor": {
+  "A": [],
+  "B": [
+   [
+    "easyeditor/models/rome/compute_v.py",
+    1
+   ],
+   [
+    "easyeditor/models/memit/compute_z.py",
+    1
+   ]
+  ]
+ },
+ "evaluate": {
+  "A": [],
+  "B": []
+ },
+ "exllamav2": {
+  "A": [],
+  "B": []
+ },
+ "foolbox": {
+  "A": [],
+  "B": []
+ },
+ "gptqmodel": {
+  "A": [],
+  "B": []
+ },
+ "inseq": {
+  "A": [],
+  "B": [
+   [
+    "inseq/attr/step_functions.py",
+    1
+   ]
+  ]
+ },
+ "llmcompressor": {
+  "A": [],
+  "B": []
+ },
+ "lm_eval": {
+  "A": [],
+  "B": []
+ },
+ "lm_polygraph": {
+  "A": [],
+  "B": []
+ },
+ "mergekit": {
+  "A": [],
+  "B": []
+ },
+ "mlx_lm": {
+  "A": [],
+  "B": []
+ },
+ "modAL_python": {
+  "A": [],
+  "B": []
+ },
+ "netcal": {
+  "A": [],
+  "B": []
+ },
+ "nnsight": {
+  "A": [],
+  "B": []
+ },
+ "nnterp": {
+  "A": [],
+  "B": []
+ },
+ "opacus": {
+  "A": [],
+  "B": []
+ },
+ "optimum_quanto": {
+  "A": [],
+  "B": []
+ },
+ "pyvene": {
+  "A": [],
+  "B": []
+ },
+ "robustbench": {
+  "A": [],
+  "B": []
+ },
+ "sae_lens": {
+  "A": [],
+  "B": [
+   [
+    "sae_lens/evals.py",
+    1
+   ]
+  ]
+ },
+ "selfcheckgpt": {
+  "A": [],
+  "B": []
+ },
+ "sparsify": {
+  "A": [],
+  "B": []
+ },
+ "textattack": {
+  "A": [],
+  "B": []
+ },
+ "torch_pruning": {
+  "A": [],
+  "B": []
+ },
+ "torchattacks": {
+  "A": [],
+  "B": [
+   [
+    "torchattacks/attacks/tpgd.py",
+    1
+   ]
+  ]
+ },
+ "torchdrift": {
+  "A": [],
+  "B": []
+ },
+ "transformer_lens": {
+  "A": [],
+  "B": []
+ },
+ "tuned_lens": {
+  "A": [],
+  "B": []
+ },
+ "uncertainty_toolbox": {
+  "A": [],
+  "B": []
+ },
+ "vec2text": {
+  "A": [],
+  "B": [
+   [
+    "vec2text/trainers/inversion_from_logits.py",
+    1
+   ]
+  ]
+ }
+}

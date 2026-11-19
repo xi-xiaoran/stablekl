@@ -1,0 +1,5 @@
+The benchmark data distributed with this project (the frozen inputs, the certified reference values, the
+official PyTorch outputs, and the derived results in results/) are licensed under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0).
+
+Full text: https://creativecommons.org/licenses/by/4.0/legalcode

@@ -1,0 +1,14 @@
+# Downstream experiments and figures (in addition to requirements-benchmark.txt)
+matplotlib>=3.7
+pandas>=2.0
+scipy>=1.10
+transformers>=4.45
+datasets>=2.20
+safetensors>=0.4
+tokenizers>=0.19
+# circuit analysis (experiment 4, part D; sequential ACDC)
+auto-circuit
+transformer-lens
+# PPO with a Beta policy (settings without an effect)
+rsl-rl-lib
+tensordict

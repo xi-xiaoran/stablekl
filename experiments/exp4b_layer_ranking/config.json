@@ -1,0 +1,36 @@
+{
+ "family": {
+  "name": "qwen2.5-1.5b",
+  "base": "Qwen/Qwen2.5-1.5B-Instruct",
+  "windows": 32,
+  "window_len": 512,
+  "eval_windows": 8
+ },
+ "sweeps": [
+  {
+   "name": "w4g128",
+   "bits": 4,
+   "group": 128
+  },
+  {
+   "name": "w8",
+   "bits": 8,
+   "group": null
+  }
+ ],
+ "top_k": [
+  4,
+  8
+ ],
+ "ref_check_every": 7,
+ "sanity": {
+  "base_ppl_max": 100.0,
+  "ratio_max": {
+   "4": 1.5,
+   "8": 1.05
+  },
+  "note": "pre-registered: a single-layer variant outside 1/1.05 <= ppl ratio <= limit is excluded"
+ },
+ "decision_note": "pre-registered: keep the k most sensitive layers (largest KL) in FP16, quantise all others with the sweep format; reference choice = FP64 KL of the FP16 model logits; every distinct determined choice is built and its true KL measured",
+ "eval_note": "pre-registered: the mixed-precision models are also evaluated on the next 8 non-overlapping 512-token windows of WikiText-2 test, not used for the layer choice"
+}

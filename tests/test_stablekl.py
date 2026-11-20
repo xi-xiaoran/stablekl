@@ -82,3 +82,54 @@ def test_logits_kl_is_zero_with_zero_gradient_at_identity():
     v = stablekl.logits_kl(a, c)
     v.backward()
     assert v.item() == 0 and torch.all(c.grad == 0)
+
+
+def _exact_logits_kl(a, c):
+    mp.mp.dps = 80
+    a, c = [mp.mpf(float(v)) for v in a], [mp.mpf(float(v)) for v in c]
+    la, lc = mp.log(mp.fsum(mp.exp(v - max(a)) for v in a)) + max(a), mp.log(mp.fsum(mp.exp(v - max(c)) for v in c)) + max(c)
+    p, q = [mp.exp(v - la) for v in a], [mp.exp(v - lc) for v in c]
+    return mp.fsum(pi * ((x - la) - (y - lc)) for pi, x, y in zip(p, a, c)), [qi - pi for pi, qi in zip(p, q)]
+
+
+@pytest.mark.parametrize("a,c", [
+    ([0.0, 2.0 ** -55], [1.0, 1.0]),                 # the float64 difference a - c is inexact
+    ([1000.3, 998.8, 1002.0], [0.3, -1.2, 2.0]),     # common offset +1000: expm1 overflows without centring
+    ([-29.7, -31.2, -28.0], [0.3, -1.2, 2.0]),       # common offset -30: 1 + sum q expm1 cancels without centring
+    ([0.0, 0.0], [0.0, -2000.0]),                    # distributions far apart
+])
+def test_logits_kl_guarded_rows(a, c):
+    at = torch.tensor([a], dtype=torch.float32)
+    ct = torch.tensor([c], dtype=torch.float32, requires_grad=True)
+    out = stablekl.logits_kl(at, ct)
+    out.backward()
+    kl, grad = _exact_logits_kl(at[0], ct[0].detach())
+    assert out.item() == torch.tensor(float(kl), dtype=torch.float64).to(torch.float32).item()
+    for g, t in zip(ct.grad[0].tolist(), grad):
+        assert g == pytest.approx(float(t), rel=1e-6, abs=1e-44)
+
+
+def test_logits_kl_is_exactly_zero_for_a_common_offset():
+    c = torch.tensor([[0.5, -1.0, 2.0]], requires_grad=True)
+    for offset in (-40.0, -0.75, 8.0, 1024.0):
+        c.grad = None
+        out = stablekl.logits_kl(c.detach() + offset, c)
+        out.backward()
+        assert out.item() == 0.0 and not c.grad.abs().any()
+
+
+@pytest.mark.parametrize("mode", ["ours", "rewrite"])
+@pytest.mark.parametrize("dt", [torch.float16, torch.float32])
+def test_categorical_with_zero_probabilities_in_p(mode, dt):
+    ln2 = torch.tensor(math.log(2.0), dtype=torch.float64).to(dt).item()
+    p, q = D.Categorical(probs=torch.tensor([1.0, 0.0], dtype=dt)), D.Categorical(probs=torch.tensor([0.5, 0.5], dtype=dt))
+    assert stablekl.kl_divergence(p, q, mode=mode).item() == ln2
+    p, q = D.Categorical(logits=torch.tensor([0.0, -math.inf], dtype=dt)), D.Categorical(logits=torch.tensor([0.0, 0.0], dtype=dt))
+    assert stablekl.kl_divergence(p, q, mode=mode).item() == ln2
+    p = D.Categorical(probs=torch.tensor([[0.3, 0.7, 0.0], [0.2, 0.3, 0.5], [1.0, 0.0, 0.0]], dtype=dt))
+    q = D.Categorical(probs=torch.tensor([[0.2, 0.3, 0.5], [0.3, 0.3, 0.4], [0.0, 0.5, 0.5]], dtype=dt))
+    out = stablekl.kl_divergence(p, q, mode=mode)
+    ref = D.kl_divergence(D.Categorical(probs=p.probs.double()), D.Categorical(probs=q.probs.double()))
+    assert out[0].item() == pytest.approx(ref[0].item(), rel=4e-3 if dt == torch.float16 else 1e-6)
+    assert out[1].item() == pytest.approx(ref[1].item(), rel=4e-3 if dt == torch.float16 else 1e-6)
+    assert math.isinf(out[2].item()) and out[2].item() > 0

@@ -8,5 +8,5 @@ from .closed_form import kl_divergence
 from .api_b import kl_div
 from .logits import logits_kl
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __all__ = ["kl_divergence", "kl_div", "logits_kl", "__version__"]

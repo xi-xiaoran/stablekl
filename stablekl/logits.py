@@ -28,6 +28,29 @@ def _phi(w):
     series = ws * ws * acc
     return torch.where(small, series, w * torch.exp(w) - torch.expm1(w))
 
+def _guarded(A, C, u, lo, q, w, bad):
+    """log(p / q) for the guarded rows.  The difference is first centred at the student's largest logit, which
+    is exact for a common offset (a = c + const gives w = 0), and the low part lost by the subtraction is added
+    back; if 1 + sum q expm1(.) still cancels, it is centred once more by the offset just computed.  Rows that
+    still overflow hold distributions that are far apart ('far'): their KL is sum p (log p - log q) and their
+    gradient q - p, neither of which cancels there."""
+    lo = torch.where(torch.isfinite(lo), lo, torch.zeros_like(lo))
+    uc = (u - torch.gather(u, -1, C.argmax(-1, keepdim=True))) + lo
+    S = (q * torch.expm1(uc)).sum(-1, keepdim=True)
+    d = torch.log1p(S)
+    again = (S < -0.5) & torch.isfinite(d)
+    uc2 = torch.where(again, uc - d, uc)
+    S2 = (q * torch.expm1(uc2)).sum(-1, keepdim=True)
+    wc = torch.where(again, uc2 - torch.log1p(S2), uc - d)
+    ok = torch.isfinite(wc).all(-1)
+    far = bad & ~ok
+    w = torch.where((bad & ok).unsqueeze(-1), wc, w)
+    p = torch.softmax(A, -1)
+    lr = torch.log_softmax(A, -1) - torch.log_softmax(C, -1)
+    row_far = torch.where(p > 0, p * lr, torch.zeros_like(p)).sum(-1)
+    w = torch.where(far.unsqueeze(-1), torch.zeros_like(w), w)
+    return w, far, row_far, q - p
+
 class LogitsKL(torch.autograd.Function):
 
     @staticmethod
@@ -35,9 +58,22 @@ class LogitsKL(torch.autograd.Function):
         A, C = (a.detach().double(), c.detach().double())
         u = A - C
         q = torch.softmax(C, -1)
-        delta = torch.log1p((q * torch.expm1(u)).sum(-1, keepdim=True))
+        S = (q * torch.expm1(u)).sum(-1, keepdim=True)
+        delta = torch.log1p(S)
         w = u - delta
-        kl = (q * _phi(w)).sum(-1).mean()
+        # Guarded rows: the float64 difference u lost bits (lo != 0), 1 + S cancels (the teacher's logits lie
+        # below the student's by a common offset), or an intermediate overflowed.
+        bb = u - A
+        lo = (A - (u - bb)) + (-C - bb)
+        bad = ((lo != 0) | ~torch.isfinite(w)).any(-1) | (S.squeeze(-1) < -0.5)
+        far = None
+        if bool(bad.any()):
+            w, far, row_far, g_far = _guarded(A, C, u, lo, q, w, bad)
+        rows = (q * _phi(w)).sum(-1)
+        if far is not None:
+            rows = torch.where(far, row_far, rows)
+        ctx.far, ctx.g_far = (far, g_far) if far is not None else (None, None)
+        kl = rows.mean()
         ctx.save_for_backward(q, w)
         ctx.dt = c.dtype
         ctx.B = A.shape[0]
@@ -47,6 +83,8 @@ class LogitsKL(torch.autograd.Function):
     def backward(ctx, G):
         q, w = ctx.saved_tensors
         g = -(G.double() / ctx.B) * q * torch.expm1(w)
+        if ctx.far is not None:
+            g = torch.where(ctx.far.unsqueeze(-1), G.double() / ctx.B * ctx.g_far, g)
         return (None, _round_once(g, ctx.dt))
 
 def logits_kl(teacher_logits, student_logits):

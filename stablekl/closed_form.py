@@ -55,6 +55,35 @@ _TWO_PARAM = {   # family -> {parameterisation: (module, function factory, takes
 }
 
 
+def _categorical(F, kind, a, c):
+    """Categorical KL.  Rows in which P has categories of probability zero are reduced to the support S of P:
+    KL(P || Q) = KL(P_S || Q_S / Q(S)) - log Q(S), both terms non-negative.  All other rows take the usual path."""
+    zero = (a == 0) if kind == "probs" else (a == -float("inf"))
+    rows = zero.any(-1)
+    if not bool(rows.any()):
+        return F.apply(a, c)
+    out = a.new_empty(a.shape[0])
+    keep = ~rows
+    if bool(keep.any()):
+        out[keep] = F.apply(a[keep], c[keep])
+    idx = rows.nonzero().reshape(-1)
+    masks, inv = torch.unique(zero[idx], dim=0, return_inverse=True)
+    for g in range(masks.shape[0]):
+        r = idx[inv == g]
+        S = ~masks[g]
+        if not bool(S.any()):
+            out[r] = float("nan")
+            continue
+        cS, cN = c[r][:, S], c[r][:, ~S]
+        if kind == "probs":
+            extra = torch.log1p(cN.sum(-1) / cS.sum(-1))
+        else:
+            d = torch.logsumexp(cN, -1) - torch.logsumexp(cS, -1)
+            extra = torch.where(d > 0, d + torch.log1p(torch.exp(-d.abs())), torch.log1p(torch.exp(-d.abs())))
+        out[r] = extra if int(S.sum()) == 1 else F.apply(a[r][:, S], cS) + extra
+    return out
+
+
 def _check(p, q):
     if type(p) is not type(q):
         raise NotImplementedError(f"stablekl repairs same-family pairs only, got {type(p).__name__} and {type(q).__name__}")
@@ -117,7 +146,7 @@ def kl_divergence(p, q, mode="ours"):
         kind = _given(p, "probs", "logits")
         ts, dt = _prepare([getattr(p, kind), getattr(q, kind)], mode)
         shape, K = ts[0].shape[:-1], ts[0].shape[-1]
-        out = _mod("categorical").KLC[kind].apply(ts[0].reshape(-1, K), ts[1].reshape(-1, K))
+        out = _categorical(_mod("categorical").KLC[kind], kind, ts[0].reshape(-1, K), ts[1].reshape(-1, K))
         return _finish(out, dt, mode, shape)
     if fam is D.Dirichlet:
         ts, dt = _prepare([p.concentration, q.concentration], mode)

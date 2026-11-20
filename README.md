@@ -253,6 +253,11 @@ gradient to zero as well. A non-exhaustive list:
 * **Two cells of `kl_div`.** float16, `log_target=True`, backward, K = 2 and 4: the repaired gradients fail only
   the vector-cosine criterion of the acceptance protocol, because of the float16 format itself (paper,
   appendix on interface B).
+* **`logits_kl` works in float64.** Its result is rounded once from a float64 evaluation and is not certified by
+  interval arithmetic. For sharply peaked distributions, probability mass below the float64 resolution of the
+  logits (about 1e-16 relative to the largest logit) is not resolved.
+* **`kl_div` raises instead of guessing.** If the rounding of a result is still undecided at 16,384 bits of
+  interval arithmetic, `stablekl.kl_div` raises `UncertifiedRounding` and returns no value.
 * **Speed.** No fused kernels; see "Cost" above.
 * **Known test failures.** Five self-checks in `test_certify.py` (one fixed regression anchor, one retry test and
   three finite-difference gradient checks) fail in the reference environment (python-flint 0.9.0) because the

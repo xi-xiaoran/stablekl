@@ -38,15 +38,17 @@ tensor(5.0000e-09)
 ```
 
 ```python
->>> t = torch.randn(1, 32000); s = t + 1e-4 * torch.randn(1, 32000)      # logits of two nearby models
+>>> torch.manual_seed(0)
+>>> t = torch.randn(1, 32000); s = t + 1e-2 * torch.randn(1, 32000)    # logits of two nearby models
+>>> t, s = t.half(), s.half()                                            # the same float16 inputs for both
 >>> from torch.distributions import Categorical
->>> kl_divergence(Categorical(logits=t.half()), Categorical(logits=s.half()))
-tensor([-3.2783e-06], dtype=torch.float16)                                # negative
->>> stablekl.logits_kl(t, s)                                              # float64 reference: 4.9108e-09
-tensor(4.9108e-09)
+>>> kl_divergence(Categorical(logits=t), Categorical(logits=s))          # exact KL of these inputs: 4.9277e-05
+tensor([-0.0001], dtype=torch.float16)                                    # negative
+>>> stablekl.logits_kl(t, s)                                              # correctly rounded to float16
+tensor(4.9293e-05, dtype=torch.float16)
 ```
 
-(The numbers depend on the random draw; the first example is deterministic.)
+(The exact values are computed in float64 from the same float16 logits.)
 
 ---
 
@@ -227,8 +229,9 @@ failures (see [Limitations](#limitations)).
 ## Earlier reports
 
 The failure for nearly identical distributions has been reported by users for years. The answers usually
-recommend clamping the result at zero, which removes the sign but not the error, and leaves the gradient
-unchanged. A non-exhaustive list:
+recommend clamping the result at zero. That removes the sign but not the error: positive results keep their
+error and their official gradient, and wherever the result was negative the clamp sets the value to 0 and the
+gradient to zero as well. A non-exhaustive list:
 
 * PyTorch forum 48470 (2019): the `Categorical` KL of two close distributions is negative, and the `probs` and
   `logits` parameterisations disagree. https://discuss.pytorch.org/t/48470

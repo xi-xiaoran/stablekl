@@ -17,7 +17,7 @@ Figures are written to `figures/out/`. Model checkpoints and datasets are downlo
 |---|---|---|
 | Figure 1 (a): relative error of the Exponential KL vs. the true KL | `python figures/fig1_overview.py` | recomputed on 3,000 random pairs per point against 50-digit arithmetic |
 | Figure 1 (b): identical-start distillation | (same script) | `results/distillation/runs.jsonl` |
-| Figure 2: error rate per KL interval, all closed forms | `python figures/fig2_errkl.py` | `results/interface_a/unit_metrics.csv.gz` |
+| Figure 2: error rate per KL interval, 16 scalar-family configurations pooled (region R0) | `python figures/fig2_errkl.py` | `results/interface_a/unit_metrics.csv.gz` |
 | Experiment 1 figure: Geometric fit, true KL along training | `python figures/fig_exp1.py` | recomputed (12 starts, Adam, 3,000 steps; CPU) |
 | Experiment 3 figure: drift vs. learning rate, vocabulary, precision | `python figures/fig_grid_lr.py` | `results/distillation/runs.jsonl` |
 | GPU appendix heatmaps (official CPU / official GPU / ours) | `python figures/heat_paper.py` | `results/heatmaps/*.csv` |
@@ -171,4 +171,5 @@ python experiments/exp4d_circuit_edges/summarize_edge2.py runs/exp4d
 
 **Call-site survey** (paper appendix): `python experiments/callsite_survey/survey_list.py <unpacked library
 sources...> out.json` lists the call sites of both interfaces; `results/callsite_survey/survey_calls.json` is the
-result for the libraries in the paper.
+result for the libraries in the paper. One use that the pattern does not match was added by hand: `allennlp`
+(`allennlp/fairness/fairness_metrics.py` stores `kl_divergence` and calls it through an attribute).

@@ -74,7 +74,7 @@ def pc(*k):
 order = ['B_c'] + [f'B_{i}' for i in range(1, 15)]
 sup = [u for u in units if u['layer'] in ('S1s', 'S1ts')]
 if sup:
-    P('\n## 5b. Supplementary cells (addendum A1; separate layers, never merged into S1 / S1t)\n\n| layer | group | region | gap | rows | status | candidates | interp | ulp | ulp_zeroed | OTHER_CELL | ROUNDED_TO_IDENTICAL | UNCERT_BIN |\n|' + '---|' * 13)
+    P('\n## 5b. Supplementary cells (additional sampling; separate layers, never merged into S1 / S1t)\n\n| layer | group | region | gap | rows | status | candidates | interp | ulp | ulp_zeroed | OTHER_CELL | ROUNDED_TO_IDENTICAL | UNCERT_BIN |\n|' + '---|' * 13)
     for u in sup:
         P(f"| {u['layer']} | {u['group']} | {u['region']} | {u['GAP']} | {u['n_rows']} | {u['status']} | {u['CANDIDATES']} | {u['ACCEPTED_supp_interp']} | {u['ACCEPTED_supp_ulp']} | {u['ACCEPTED_supp_ulp_zeroed']} | {u['OTHER_CELL']} | {u['ROUNDED_TO_IDENTICAL']} | {u['UNCERT_BIN']} |")
 for layer in ('S1', 'S1t', 'S1s', 'S1ts'):

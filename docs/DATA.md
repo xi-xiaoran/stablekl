@@ -2,7 +2,7 @@
 
 ## Download
 
-The data are hosted on Hugging Face: <https://huggingface.co/datasets/xi-xiaoran/stablekl-benchmark> (10 GB, 44,000 files).
+The data are hosted on Hugging Face: <https://huggingface.co/datasets/xi-xiaoran/stablekl-benchmark> (10.8 GB, 44,000 files).
 
 ```bash
 pip install -U huggingface_hub

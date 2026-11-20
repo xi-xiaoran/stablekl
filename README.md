@@ -14,7 +14,7 @@ equal (a student next to its teacher, a policy next to its reference, a quantise
 <p align="center"><img src="docs/assets/overview.png" width="900" alt="Official vs. repaired KL"></p>
 
 *(a) Relative error of `kl_divergence(Exponential, Exponential)` against the exact value as the two
-distributions approach each other: the official result is 100% wrong below a KL of about 1e-7 (float32) or 1e-4
+distributions approach each other: the official result is 100% wrong below a KL of about 4e-8 (float32) or 4e-4
 (float16); the repair stays at the rounding level. (b) A student initialised as an exact copy of its teacher and
 trained to minimise the KL between them (vocabulary 151,936, Adam, learning rate 1e-2, 10 seeds): with the official
 KL its top-1 prediction drifts away from the teacher's; with the repair it agrees with the teacher on every token.*
@@ -121,9 +121,9 @@ for two Normals). When the distributions are close, the true KL is far smaller t
 error of the terms dominates the result. On the benchmark data:
 
 * more than 85% of the returned values are off by at least 1% once the true KL falls below about 1e-7 in float32
-  (1e-3 in float16), up to 30% are negative, and gradients lose their direction, on CPU and GPU alike;
+  (1e-3 in float16), roughly 30% are negative, and gradients lose their direction, on CPU and GPU alike;
 * evaluating the same formulas one precision higher still leaves 7–51% of the float32 values significantly
-  wrong for 22 of the 23 parameterisations;
+  wrong for 22 of the 23 configurations;
 * clamping at zero removes the sign, not the error.
 
 <p align="center"><img src="docs/assets/heatmap_fp32.png" width="900" alt="Error heatmap"></p>
@@ -165,7 +165,7 @@ docs/                        DATA.md (file formats), REPRODUCE.md (paper item ->
 
 ## Data
 
-The frozen benchmark data (10 GB) are on Hugging Face: <https://huggingface.co/datasets/xi-xiaoran/stablekl-benchmark>. Download all of it, or one configuration:
+The frozen benchmark data (10.8 GB) are on Hugging Face: <https://huggingface.co/datasets/xi-xiaoran/stablekl-benchmark>. Download all of it, or one configuration:
 
 ```bash
 huggingface-cli download --repo-type dataset xi-xiaoran/stablekl-benchmark --local-dir data
@@ -261,7 +261,8 @@ gradient to zero as well. A non-exhaustive list:
 
 ## Citation and licenses
 
-The paper is under review; citation information will be added after the review period.
+Paper: *The KL Divergence Is Never Negative, Except in PyTorch*. The arXiv link and a citation entry will be added
+here once the preprint is online.
 
 * Code: BSD 3-Clause License ([LICENSE](LICENSE)).
 * Data: Creative Commons Attribution 4.0 International ([LICENSE-DATA](LICENSE-DATA)).

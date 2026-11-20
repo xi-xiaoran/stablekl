@@ -1,7 +1,7 @@
 import glob, json, os, sys, numpy as np
 
 def main(root):
-    L = ['# Batch design with Beta posteriors (part 2; designed after part 1 was seen): official FP32 KL vs the Rewrite (FP32)', '', "T = 100,000 observations, K = 10, 5 seeds; ranges over the seeds.  'x exact' = relative to the policy with the exact EIG and the same batch size.", '', '| start | batch size | rounds | official: wrong rounds | official: mean share of the best EIG lost per round | official: sum of posterior variances x exact | official: largest posterior variance x exact | official: fewest pulls of an arm (exact policy) | Rewrite: wrong rounds | Rewrite: sum of posterior variances x exact | verdict |', '|---|---|---|---|---|---|---|---|---|---|---|']
+    L = ['# Batch design with Beta posteriors: official FP32 KL vs the Rewrite (FP32)', '', "T = 100,000 observations, K = 10, 5 seeds; ranges over the seeds.  'x exact' = relative to the policy with the exact EIG and the same batch size.", '', '| start | batch size | rounds | official: wrong rounds | official: mean share of the best EIG lost per round | official: sum of posterior variances x exact | official: largest posterior variance x exact | official: fewest pulls of an arm (exact policy) | Rewrite: wrong rounds | Rewrite: sum of posterior variances x exact | verdict |', '|---|---|---|---|---|---|---|---|---|---|---|']
     out = {}
     for st in ('cold', 'warm'):
         runs = [json.load(open(p)) for p in sorted(glob.glob(os.path.join(root, f'batch_{st}_seed*.json')))]

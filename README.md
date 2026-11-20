@@ -254,8 +254,8 @@ gradient to zero as well. A non-exhaustive list:
   the vector-cosine criterion of the acceptance protocol, because of the float16 format itself (paper,
   appendix on interface B).
 * **`logits_kl` works in float64.** Its result is rounded once from a float64 evaluation and is not certified by
-  interval arithmetic. For sharply peaked distributions, probability mass below the float64 resolution of the
-  logits (about 1e-16 relative to the largest logit) is not resolved.
+  interval arithmetic. For sharply peaked distributions, differences between probabilities that round to the
+  same float64 number are not resolved.
 * **`kl_div` raises instead of guessing.** If the rounding of a result is still undecided at 16,384 bits of
   interval arithmetic, `stablekl.kl_div` raises `UncertifiedRounding` and returns no value.
 * **Speed.** No fused kernels; see "Cost" above.

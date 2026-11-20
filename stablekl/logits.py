@@ -28,28 +28,41 @@ def _phi(w):
     series = ws * ws * acc
     return torch.where(small, series, w * torch.exp(w) - torch.expm1(w))
 
+_TINY = 2.3e-308      # below this a float64 probability is subnormal or zero
+_BIG = 30.0           # above this q * expm1(x) is formed as exp(log q + x) - q
+
+
 def _guarded(A, C, u, lo, q, w, bad):
     """log(p / q) for the guarded rows.  The difference is first centred at the student's largest logit, which
     is exact for a common offset (a = c + const gives w = 0), and the low part lost by the subtraction is added
-    back; if 1 + sum q expm1(.) still cancels, it is centred once more by the offset just computed.  Rows that
-    still overflow hold distributions that are far apart ('far'): their KL is sum p (log p - log q) and their
-    gradient q - p, neither of which cancels there."""
+    back; if 1 + sum q expm1(.) still cancels, it is centred once more by the offset just computed.  Where the
+    difference of one category is large, q exp(.) is formed as exp(log q + .), which neither overflows nor loses
+    a student probability that underflowed ('over' marks these entries, 'pw' holds p there).  Rows that still
+    overflow ('far') use sum p (log p - log q) and the gradient q - p."""
     lo = torch.where(torch.isfinite(lo), lo, torch.zeros_like(lo))
+    lq = torch.log_softmax(C, -1)
+
+    def qem1(x):
+        return torch.where(x > _BIG, torch.exp(lq + x) - q, q * torch.expm1(x))
+
     uc = (u - torch.gather(u, -1, C.argmax(-1, keepdim=True))) + lo
-    S = (q * torch.expm1(uc)).sum(-1, keepdim=True)
+    S = qem1(uc).sum(-1, keepdim=True)
     d = torch.log1p(S)
     again = (S < -0.5) & torch.isfinite(d)
     uc2 = torch.where(again, uc - d, uc)
-    S2 = (q * torch.expm1(uc2)).sum(-1, keepdim=True)
+    S2 = qem1(uc2).sum(-1, keepdim=True)
     wc = torch.where(again, uc2 - torch.log1p(S2), uc - d)
     ok = torch.isfinite(wc).all(-1)
     far = bad & ~ok
     w = torch.where((bad & ok).unsqueeze(-1), wc, w)
+    over = (bad & ok).unsqueeze(-1) & (w > _BIG)
+    pw = torch.exp(lq + w)
     p = torch.softmax(A, -1)
-    lr = torch.log_softmax(A, -1) - torch.log_softmax(C, -1)
+    lr = torch.log_softmax(A, -1) - lq
     row_far = torch.where(p > 0, p * lr, torch.zeros_like(p)).sum(-1)
     w = torch.where(far.unsqueeze(-1), torch.zeros_like(w), w)
-    return w, far, row_far, q - p
+    return w, over, pw, far, row_far, q - p
+
 
 class LogitsKL(torch.autograd.Function):
 
@@ -65,14 +78,17 @@ class LogitsKL(torch.autograd.Function):
         # below the student's by a common offset), or an intermediate overflowed.
         bb = u - A
         lo = (A - (u - bb)) + (-C - bb)
-        bad = ((lo != 0) | ~torch.isfinite(w)).any(-1) | (S.squeeze(-1) < -0.5)
+        bad = ((lo != 0) | ~torch.isfinite(w)).any(-1) | (S.squeeze(-1) < -0.5) | ((q < _TINY) & (u > 0)).any(-1)
         far = None
         if bool(bad.any()):
-            w, far, row_far, g_far = _guarded(A, C, u, lo, q, w, bad)
-        rows = (q * _phi(w)).sum(-1)
+            w, over, pw, far, row_far, g_far = _guarded(A, C, u, lo, q, w, bad)
+        terms = q * _phi(w)
+        if far is not None:
+            terms = torch.where(over, pw * (w - 1) + q, terms)
+        rows = terms.sum(-1)
         if far is not None:
             rows = torch.where(far, row_far, rows)
-        ctx.far, ctx.g_far = (far, g_far) if far is not None else (None, None)
+        ctx.far, ctx.g_far, ctx.over, ctx.pw = (far, g_far, over, pw) if far is not None else (None,) * 4
         kl = rows.mean()
         ctx.save_for_backward(q, w)
         ctx.dt = c.dtype
@@ -84,6 +100,7 @@ class LogitsKL(torch.autograd.Function):
         q, w = ctx.saved_tensors
         g = -(G.double() / ctx.B) * q * torch.expm1(w)
         if ctx.far is not None:
+            g = torch.where(ctx.over, G.double() / ctx.B * (q - ctx.pw), g)
             g = torch.where(ctx.far.unsqueeze(-1), G.double() / ctx.B * ctx.g_far, g)
         return (None, _round_once(g, ctx.dt))
 

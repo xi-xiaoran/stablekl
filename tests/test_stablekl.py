@@ -97,6 +97,8 @@ def _exact_logits_kl(a, c):
     ([1000.3, 998.8, 1002.0], [0.3, -1.2, 2.0]),     # common offset +1000: expm1 overflows without centring
     ([-29.7, -31.2, -28.0], [0.3, -1.2, 2.0]),       # common offset -30: 1 + sum q expm1 cancels without centring
     ([0.0, 0.0], [0.0, -2000.0]),                    # distributions far apart
+    ([0.0, -40.0], [0.0, -1000.0]),                  # a rare category with a large difference; KL is 4e-15
+    ([0.0, -60.0, 1.0], [0.0, -760.0, 1.0]),         # the student probability underflows, the teacher's does not
 ])
 def test_logits_kl_guarded_rows(a, c):
     at = torch.tensor([a], dtype=torch.float32)

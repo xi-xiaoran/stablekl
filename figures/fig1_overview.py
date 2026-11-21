@@ -1,8 +1,6 @@
-import json, numpy as np, torch, mpmath as mp, matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-plt.rcParams.update({'font.family': 'DejaVu Serif', 'mathtext.fontset': 'dejavuserif', 'pdf.fonttype': 42, 'axes.spines.top': False, 'axes.spines.right': False})
-OFF, OURS, INK, MUTED = ('#c4462d', '#2a78d6', '#1d1d1f', '#6b6b70')
+import json, numpy as np, torch, mpmath as mp
+from matplotlib.lines import Line2D
+from style import *
 mp.mp.dps = 50
 rng = np.random.default_rng(0)
 from _paths import OUT, RESULTS
@@ -40,45 +38,40 @@ def curve(V, dt, method, lr=0.01):
     assert all((r['steps_done'] == 300 for r in rs))
     Y = np.array([[100 * r['log'][str(s)]['top1_disagree'] for s in st] for r in rs])
     return (np.array(st), np.median(Y, 0), Y.min(0), Y.max(0), len(rs))
-fig, (a, b) = plt.subplots(1, 2, figsize=(6.75, 2.45), gridspec_kw={'wspace': 0.3})
-for A, ls, lab, lo_ in ((A32, '-', 'FP32', 0.0), (A16, '--', 'FP16', 6.2e-05)):
+fig, (a, b) = plt.subplots(1, 2, figsize=(6.75, 2.3), gridspec_kw={'wspace': 0.3})
+for A, ls, lo_ in ((A32, '-', 0.0), (A16, DASH, 6.2e-05)):
     ok = ~np.isnan(A[:, 0]) & (A[:, 0] >= lo_)
-    a.plot(A[ok, 0], 100 * A[ok, 1], ls, color=OFF, lw=1.6)
-    a.plot(A[ok, 0], 100 * np.maximum(A[ok, 2], 1e-10), ls, color=OURS, lw=1.6)
+    a.plot(A[ok, 0], 100 * A[ok, 1], ls=ls, color=OFF, lw=1.5)
+    a.plot(A[ok, 0], 100 * np.maximum(A[ok, 2], 1e-10), ls=ls, color=OURS, lw=1.5)
 a.set_xscale('log')
 a.set_yscale('log')
 a.invert_xaxis()
 a.set_ylim(1e-07, 30000.0)
 a.axhline(100, color=MUTED, lw=0.6, ls=':')
-a.text(2e-15, 160, '100% error', fontsize=6.5, color=MUTED, va='bottom', ha='right')
-a.set_xlabel('true KL  (distributions closer $\\rightarrow$)', fontsize=8)
-a.set_ylabel('relative error of returned KL (%)', fontsize=8)
-a.text(3e-05, 1200.0, 'official', color=OFF, fontsize=8.5, fontweight='bold')
-a.text(3e-09, 2e-05, 'ours', color=OURS, fontsize=8.5, fontweight='bold')
-a.plot([], [], '-', color=INK, lw=1.2, label='FP32')
-a.plot([], [], '--', color=INK, lw=1.2, label='FP16')
-a.legend(frameon=False, fontsize=7, loc='center right', handlelength=2.2, title='input precision', title_fontsize=6.5)
-a.set_title('(a) The returned KL is wrong when it is small', fontsize=8.5, loc='left')
+a.text(2e-15, 160, '100% error', fontsize=7, color=MUTED, va='bottom', ha='right')
+a.set_xlabel('true KL  (distributions closer $\\rightarrow$)')
+a.set_ylabel('relative error of returned KL (%)')
+h = [Line2D([], [], color=OFF, lw=1.5), Line2D([], [], color=OFF, lw=1.5, ls=DASH), Line2D([], [], color=OURS, lw=1.5), Line2D([], [], color=OURS, lw=1.5, ls=DASH)]
+a.legend(h, ['official, FP32', 'official, FP16', 'ours, FP32', 'ours, FP16'], fontsize=7, loc='center right', handlelength=2.2, labelspacing=0.3, bbox_to_anchor=(1.0, 0.42))
+a.set_title('(a) The returned KL is wrong when it is small', loc='left')
+a.minorticks_off()
 V = 151936
-for dt, ls in (('fp32', '-'), ('fp16', '--')):
+for dt, ls in (('fp32', '-'), ('fp16', DASH)):
     s, m, lo, hi, n1 = curve(V, dt, 'kl_div')
-    b.plot(np.r_[0, s], np.r_[0, m], ls, color=OFF, lw=1.6, marker='o', ms=2.5)
+    b.plot(np.r_[0, s], np.r_[0, m], ls=ls, color=OFF, lw=1.5)
     b.fill_between(np.r_[0, s], np.r_[0, lo], np.r_[0, hi], color=OFF, alpha=0.13, lw=0)
     s, m2, lo2, hi2, n2 = curve(V, dt, 'logitsA')
-    b.plot(np.r_[0, s], np.r_[0, m2], ls, color=OURS, lw=1.6, marker='o', ms=2.5)
+    b.plot(np.r_[0, s], np.r_[0, m2], ls=ls, color=OURS, lw=1.5)
     print('panel b', dt, 'official median', m.round(1), 'range last', lo[-1].round(1), hi[-1].round(1), 'seeds', n1, '| ours max', hi2.max(), 'seeds', n2)
 b.set_xscale('symlog', linthresh=1)
 b.set_xlim(0, 330)
 b.set_ylim(-3, 100)
 b.set_xticks([0, 1, 10, 100, 300])
 b.set_xticklabels(['0', '1', '10', '100', '300'])
-b.set_xlabel('training step', fontsize=8)
-b.set_ylabel('student $\\neq$ teacher, top-1 (%)', fontsize=8)
-b.text(2.2, 62, 'official', color=OFF, fontsize=8.5, fontweight='bold')
-b.text(12, 5, 'ours (exactly 0)', color=OURS, fontsize=8.5, fontweight='bold')
-b.set_title('(b) A student that starts as its teacher drifts away', fontsize=8.5, loc='left')
-for ax in (a, b):
-    ax.tick_params(labelsize=7, length=2.5, width=0.5)
-    [s.set_linewidth(0.6) for s in ax.spines.values()]
-fig.savefig(OUT / 'fig1_overview.pdf', bbox_inches='tight')
-fig.savefig(OUT / 'fig1_overview.png', dpi=220, bbox_inches='tight')
+b.minorticks_off()
+b.set_xlabel('training step')
+b.set_ylabel('student $\\neq$ teacher, top-1 (%)')
+b.legend(h, ['official, FP32', 'official, FP16', 'ours, FP32 (exactly 0)', 'ours, FP16 (exactly 0)'], fontsize=7, loc='upper left', handlelength=2.2, labelspacing=0.3)
+b.set_title('(b) A student that starts as its teacher drifts away', loc='left')
+fig.savefig(OUT / 'fig1_overview.pdf', bbox_inches='tight', pad_inches=0.02)
+fig.savefig(OUT / 'fig1_overview.png', dpi=220, bbox_inches='tight', pad_inches=0.02)

@@ -3,9 +3,12 @@
 [![License: BSD-3-Clause](https://img.shields.io/badge/code-BSD--3--Clause-blue.svg)](LICENSE)
 [![Data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-lightgrey.svg)](LICENSE-DATA)
 [![Dataset on Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20dataset-stablekl--benchmark-yellow.svg)](https://huggingface.co/datasets/xi-xiaoran/stablekl-benchmark)
+[![arXiv](https://img.shields.io/badge/arXiv-2611.30835-b31b1b.svg)](https://arxiv.org/abs/2611.30835)
 ![Python](https://img.shields.io/badge/python-%E2%89%A53.10-blue.svg)
 ![PyTorch](https://img.shields.io/badge/PyTorch-%E2%89%A52.1-ee4c2c.svg)
 ![Devices](https://img.shields.io/badge/devices-CPU%20%7C%20CUDA-green.svg)
+
+**Paper:** [The KL Divergence Is Never Negative, Except in PyTorch](https://arxiv.org/abs/2611.30835) (arXiv:2611.30835) · **Benchmark:** [Hugging Face](https://huggingface.co/datasets/xi-xiaoran/stablekl-benchmark)
 
 The KL divergence is never negative, but PyTorch's implementations return negative values, zeros and
 wrong gradients exactly where the divergence is used most often: between two distributions that are almost
@@ -266,8 +269,21 @@ gradient to zero as well. A non-exhaustive list:
 
 ## Citation and licenses
 
-Paper: *The KL Divergence Is Never Negative, Except in PyTorch*. The arXiv link and a citation entry will be added
-here once the preprint is online.
+Paper: [*The KL Divergence Is Never Negative, Except in PyTorch*](https://arxiv.org/abs/2611.30835) (arXiv:2611.30835).
+If you use the code or the benchmark, please cite
+
+```bibtex
+@article{yang2026kl,
+  title         = {The {KL} Divergence Is Never Negative, Except in {PyTorch}},
+  author        = {Yang, Zhen and Tang, Wei and Chen, Chu and Qian, Rui and Chen, Yixuan and Yang, Fan and Cui, Kangning},
+  journal       = {arXiv preprint arXiv:2611.30835},
+  year          = {2026},
+  eprint        = {2611.30835},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2611.30835}
+}
+```
 
 * Code: BSD 3-Clause License ([LICENSE](LICENSE)).
 * Data: Creative Commons Attribution 4.0 International ([LICENSE-DATA](LICENSE-DATA)).
